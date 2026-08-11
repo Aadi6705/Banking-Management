@@ -12,15 +12,15 @@
 
 ## Project Snapshot
 - **Project:** Banking Management System (Java, OOP, File Handling)
-- **Current Phase:** _(update — e.g., "Phase 1 — Core Models & Account Creation")_
-- **Last Updated:** _(date)_
-- **Repo:** _(GitHub URL)_
+- **Current Phase:** Phase 1 — Core Models & Account Creation
+- **Last Updated:** 2026-08-11
+- **Repo:** Local Git Repository (Initialized)
 
 ---
 
 ## Completed Phases
 _(List phases fully done, with commit reference if useful.)_
-- [ ] Phase 0 — Project Setup
+- [x] Phase 0 — Project Setup
 - [ ] Phase 1 — Core Models & Account Creation
 - [ ] Phase 2 — Authentication & Balance Inquiry
 - [ ] Phase 3 — Transactions (Deposit & Withdraw)
@@ -32,28 +32,25 @@ _(List phases fully done, with commit reference if useful.)_
 
 ## Current State of the Code
 _(A quick factual list — what exists and works right now.)_
-- Classes implemented: _e.g., Account, SavingsAccount, CurrentAccount_
-- Services implemented: _e.g., AccountService.createAccount()_
-- Persistence: _e.g., accounts.csv read/write working; transactions.csv not started_
-- Known working features: _e.g., account creation via console, login_
-- Known bugs / rough edges: _e.g., no duplicate-account-number check yet_
+- Project scaffolding completed (POM, Gitignore, Directories).
+- `Main.java` exists and prints the welcome banner successfully.
 
 ---
 
 ## Decisions Made Along the Way
 _(Anything that deviated from or clarified the original docs — so it's not re-litigated or re-guessed later.)_
-- _e.g., "Chose CSV over serialization for accounts.csv, per Architecture.md §5 recommendation."_
+- `mvn` was not found locally, so verified `Main.java` directly with `javac`. The `pom.xml` is still included for standard tooling compatibility.
 
 ---
 
 ## Next Steps
 _(The immediate next 1–3 tasks — what a new session should pick up first.)_
-1. _e.g., Implement IdGenerator for unique account numbers_
-2. _e.g., Add unit tests for AccountService.createAccount()_
-3. _e.g., Start Phase 2 login flow_
+1. Implement `Account` (abstract), `SavingsAccount`, `CurrentAccount`, `Customer` models.
+2. Implement `IdGenerator` for unique account numbers.
+3. Implement `PasswordUtil` for PIN hashing.
 
 ---
 
 ## Open Questions
 _(Anything unresolved that needs a decision before proceeding.)_
-- _e.g., Should minimum balance for Savings accounts be configurable or hardcoded for v1?_
+- None at the moment.
