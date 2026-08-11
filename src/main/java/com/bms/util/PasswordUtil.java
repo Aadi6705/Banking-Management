@@ -1,5 +1,6 @@
 package com.bms.util;
 
+import com.bms.exception.SystemConfigurationException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -20,7 +21,7 @@ public class PasswordUtil {
             byte[] hash = digest.digest(plainTextPin.getBytes());
             return Base64.getEncoder().encodeToString(hash);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error initializing SHA-256 hashing algorithm", e);
+            throw new SystemConfigurationException("Error initializing SHA-256 hashing algorithm", e);
         }
     }
 

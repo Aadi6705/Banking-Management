@@ -1,5 +1,6 @@
 package com.bms.repository.impl;
 
+import com.bms.exception.DataStorageException;
 import com.bms.model.Account;
 import com.bms.model.CurrentAccount;
 import com.bms.model.SavingsAccount;
@@ -51,7 +52,7 @@ public class FileAccountRepository implements AccountRepository {
         try {
             FileManager.writeAllLines(filePath, lines);
         } catch (IOException e) {
-            throw new RuntimeException("System error: Could not bulk write to accounts data file.", e);
+            throw new DataStorageException("System error: Could not bulk write to accounts data file.", e);
         }
     }
 
@@ -73,7 +74,7 @@ public class FileAccountRepository implements AccountRepository {
                 accounts.add(parseAccount(line));
             }
         } catch (IOException e) {
-            throw new RuntimeException("System error: Could not read accounts data file.", e);
+            throw new DataStorageException("System error: Could not read accounts data file.", e);
         } catch (Exception e) {
             // Fail fast on corrupt data per Implementation Plan Option A
             System.err.println("[ERROR] Corrupted data found in accounts file. Please fix manually.");

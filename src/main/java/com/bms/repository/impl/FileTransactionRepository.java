@@ -1,5 +1,6 @@
 package com.bms.repository.impl;
 
+import com.bms.exception.DataStorageException;
 import com.bms.model.Transaction;
 import com.bms.repository.TransactionRepository;
 import com.bms.util.FileManager;
@@ -21,7 +22,7 @@ public class FileTransactionRepository implements TransactionRepository {
         try {
             FileManager.appendLine(filePath, serializeTransaction(transaction));
         } catch (IOException e) {
-            throw new RuntimeException("System error: Could not write to transactions data file.", e);
+            throw new DataStorageException("System error: Could not write to transactions data file.", e);
         }
     }
 
@@ -38,7 +39,7 @@ public class FileTransactionRepository implements TransactionRepository {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("System error: Could not read transactions data file.", e);
+            throw new DataStorageException("System error: Could not read transactions data file.", e);
         }
         return transactions;
     }

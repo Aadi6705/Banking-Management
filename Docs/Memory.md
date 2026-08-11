@@ -12,9 +12,9 @@
 
 ## Project Snapshot
 - **Project:** Banking Management System (Java, OOP, File Handling)
-- **Current Phase:** Phase 5 — Fund Transfer
+- **Current Phase:** Phase 6 — Polish, Testing & Documentation
 - **Last Updated:** 2026-08-11
-- **Repo:** Local Git Repository (Phase 4 committed)
+- **Repo:** Local Git Repository (Phase 5 committed)
 
 ---
 
@@ -25,7 +25,7 @@ _(List phases fully done, with commit reference if useful.)_
 - [x] Phase 2 — Authentication & Balance Inquiry
 - [x] Phase 3 — Transactions (Deposit & Withdraw)
 - [x] Phase 4 — Transaction History & Reporting
-- [ ] Phase 5 — Fund Transfer
+- [x] Phase 5 — Fund Transfer
 - [ ] Phase 6 — Polish, Testing & Documentation
 
 ---
@@ -33,10 +33,10 @@ _(List phases fully done, with commit reference if useful.)_
 ## Current State of the Code
 _(A quick factual list — what exists and works right now.)_
 - **Models & Utils:** Complete (`Account`, `Customer`, `Transaction`, `IdGenerator`, `PasswordUtil`, `FileManager`).
-- **Repository:** `FileAccountRepository` and `FileTransactionRepository` handle CSV data securely.
-- **Services:** `AccountService`, `AuthService`, `TransactionService`, and `AdminService`.
+- **Repository:** `FileAccountRepository` and `FileTransactionRepository` handle CSV data securely, now supporting bulk atomic `saveAll` overwrites.
+- **Services:** `AccountService`, `AuthService`, `TransactionService` (supporting atomic multi-account transfers), and `AdminService`.
 - **UI:** `MenuHandler` manages the Main Menu, User Dashboard, and Admin Utilities. `ConsolePrinter` handles tabular formatting.
-- **Features working:** Account Creation, Login, Balance Inquiry, Deposits, Withdrawals, History Viewing, Admin Search, Admin Summary.
+- **Features working:** Account Creation, Login, Balance Inquiry, Deposits, Withdrawals, History Viewing, Admin Search, Admin Summary, **Fund Transfers**.
 
 ---
 
@@ -49,20 +49,20 @@ _(Anything that deviated from or clarified the original docs — so it's not re-
 - **Lockout:** Left out for v1 (unlimited retries) to keep implementation simple.
 - **Session Management:** Kept locally in `MenuHandler`'s `showUserDashboard` loop.
 - **Transaction IDs:** Using standard Java UUIDs.
-- **Persistence Atomicity:** `TransactionService` appends to the transaction log *before* updating the account file to prevent state divergence in case of crashes.
+- **Persistence Atomicity (Single):** Deposits/Withdrawals append to the transaction log *before* updating the account file to prevent state divergence.
 - **Admin Access:** Added a hidden `99` option in the Main Menu to access Admin utilities without full auth flow.
-- **Reporting Format:** Used formatted console tables to display History and Account Search Results.
+- **Persistence Atomicity (Transfer):** Implemented an in-memory load/modify/save-all pattern for transfers to ensure Account A and Account B are updated simultaneously. Transfers log explicitly as `TRANSFER_OUT` and `TRANSFER_IN`.
 
 ---
 
 ## Next Steps
 _(The immediate next 1–3 tasks — what a new session should pick up first.)_
-1. Implement `TransactionService.transfer(Account sourceAccount, String targetAccountNumber, double amount)`.
-2. Ensure atomicity during transfer (deduct from source, add to target, log 2 transaction records).
-3. Add "Fund Transfer" option to the User Dashboard in `MenuHandler`.
+1. Final code cleanup and style check (verify adherence to `Rules.md`).
+2. Write a `README.md` to explain how to compile and run the project (since `mvn` is missing, document the `javac` and `java` workflow).
+3. Prepare final hand-off.
 
 ---
 
 ## Open Questions
 _(Anything unresolved that needs a decision before proceeding.)_
-- How should a transfer be recorded in the transaction log? As a normal DEPOSIT/WITHDRAW, or as a specific TRANSFER_OUT/TRANSFER_IN type?
+- None.
