@@ -1,20 +1,24 @@
 package com.bms.ui;
 
 import com.bms.exception.AccountValidationException;
+import com.bms.exception.InvalidTransactionException;
 import com.bms.model.Account;
 import com.bms.service.AccountService;
 import com.bms.service.AuthService;
+import com.bms.service.TransactionService;
 
 import java.util.Scanner;
 
 public class MenuHandler {
     private final AccountService accountService;
     private final AuthService authService;
+    private final TransactionService transactionService;
     private final Scanner scanner;
 
-    public MenuHandler(AccountService accountService, AuthService authService) {
+    public MenuHandler(AccountService accountService, AuthService authService, TransactionService transactionService) {
         this.accountService = accountService;
         this.authService = authService;
+        this.transactionService = transactionService;
         this.scanner = new Scanner(System.in);
     }
 
@@ -103,7 +107,9 @@ public class MenuHandler {
         while (true) {
             ConsolePrinter.printHeader("USER DASHBOARD - " + account.getAccountNumber());
             System.out.println(" 1. Check Balance");
-            System.out.println(" 2. Logout");
+            System.out.println(" 2. Deposit");
+            System.out.println(" 3. Withdraw");
+            System.out.println(" 4. Logout");
             ConsolePrinter.printSeparator();
             System.out.print(" Select an option: ");
 
@@ -114,11 +120,47 @@ public class MenuHandler {
                     ConsolePrinter.printInfo("Current Balance: " + ConsolePrinter.formatCurrency(account.getBalance()));
                     break;
                 case "2":
+                    handleDeposit(account);
+                    break;
+                case "3":
+                    handleWithdraw(account);
+                    break;
+                case "4":
                     ConsolePrinter.printSuccess("Logged out successfully.");
                     return; // Returns to Main Menu
                 default:
-                    ConsolePrinter.printError("Invalid option. Please enter 1 or 2.");
+                    ConsolePrinter.printError("Invalid option. Please enter 1, 2, 3, or 4.");
             }
+        }
+    }
+
+    private void handleDeposit(Account account) {
+        System.out.print(" Enter amount to deposit: ₹");
+        try {
+            double amount = Double.parseDouble(scanner.nextLine().trim());
+            transactionService.deposit(account, amount);
+            ConsolePrinter.printSuccess("Deposit of " + ConsolePrinter.formatCurrency(amount) + " completed. New balance: " + ConsolePrinter.formatCurrency(account.getBalance()));
+        } catch (NumberFormatException e) {
+            ConsolePrinter.printError("Invalid amount format.");
+        } catch (InvalidTransactionException e) {
+            ConsolePrinter.printError(e.getMessage());
+        } catch (Exception e) {
+            ConsolePrinter.printError("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private void handleWithdraw(Account account) {
+        System.out.print(" Enter amount to withdraw: ₹");
+        try {
+            double amount = Double.parseDouble(scanner.nextLine().trim());
+            transactionService.withdraw(account, amount);
+            ConsolePrinter.printSuccess("Withdrawal of " + ConsolePrinter.formatCurrency(amount) + " completed. New balance: " + ConsolePrinter.formatCurrency(account.getBalance()));
+        } catch (NumberFormatException e) {
+            ConsolePrinter.printError("Invalid amount format.");
+        } catch (InvalidTransactionException e) {
+            ConsolePrinter.printError(e.getMessage());
+        } catch (Exception e) {
+            ConsolePrinter.printError("An unexpected error occurred: " + e.getMessage());
         }
     }
 }

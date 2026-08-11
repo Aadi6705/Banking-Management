@@ -12,9 +12,9 @@
 
 ## Project Snapshot
 - **Project:** Banking Management System (Java, OOP, File Handling)
-- **Current Phase:** Phase 2 — Authentication & Balance Inquiry
+- **Current Phase:** Phase 3 — Transactions (Deposit & Withdraw)
 - **Last Updated:** 2026-08-11
-- **Repo:** Local Git Repository (Phase 1 committed)
+- **Repo:** Local Git Repository (Phase 2 committed)
 
 ---
 
@@ -22,7 +22,7 @@
 _(List phases fully done, with commit reference if useful.)_
 - [x] Phase 0 — Project Setup
 - [x] Phase 1 — Core Models & Account Creation
-- [ ] Phase 2 — Authentication & Balance Inquiry
+- [x] Phase 2 — Authentication & Balance Inquiry
 - [ ] Phase 3 — Transactions (Deposit & Withdraw)
 - [ ] Phase 4 — Transaction History & Reporting
 - [ ] Phase 5 — Fund Transfer
@@ -32,13 +32,11 @@ _(List phases fully done, with commit reference if useful.)_
 
 ## Current State of the Code
 _(A quick factual list — what exists and works right now.)_
-- **Models:** `Account` (abstract), `SavingsAccount`, `CurrentAccount`, `Customer` exist.
-- **Utils:** `IdGenerator`, `PasswordUtil` (SHA-256), `FileManager` (CSV Atomic Writes) exist.
-- **Repository:** `AccountRepository` and `FileAccountRepository` read/write `Account` data successfully.
-- **Service:** `AccountService` handles validation, ID generation, PIN hashing, and saving.
-- **UI:** `ConsolePrinter` standardizes formatting. `MenuHandler` provides an interactive "Create Account" CLI flow.
-- **Tests:** `AccountServiceTest` and `FileAccountRepositoryTest` cover core behavior.
-- **Known working features:** Account creation via console is verified, data persists to `data/accounts.csv`.
+- **Models & Utils:** Complete (`Account`, `Customer`, `IdGenerator`, `PasswordUtil`, `FileManager`).
+- **Repository:** `FileAccountRepository` fully handles `accounts.csv`.
+- **Services:** `AccountService` and `AuthService` implemented and tested.
+- **UI:** `MenuHandler` handles Create Account and Login. On login, users enter the Dashboard menu.
+- **Features working:** Account creation (validation/hashing), Login (authentication), and Balance Inquiry.
 
 ---
 
@@ -48,18 +46,19 @@ _(Anything that deviated from or clarified the original docs — so it's not re-
 - **Minimum Balance (Savings):** Hardcoded to ₹1000.00 for v1.
 - **PIN Complexity:** Fixed to exactly 4 numeric digits.
 - **Corrupted Data:** Fail-fast on application load to protect data integrity.
-- **PIN Hashing:** Standard Java `MessageDigest` (SHA-256).
+- **Lockout:** Left out for v1 (unlimited retries) to keep implementation simple as recommended.
+- **Session Management:** Kept locally in `MenuHandler`'s `showUserDashboard` loop rather than a global state.
 
 ---
 
 ## Next Steps
 _(The immediate next 1–3 tasks — what a new session should pick up first.)_
-1. Implement `AuthService.login(accountNumber, pin)`.
-2. Implement login flow in `MenuHandler` with retry logic and session management.
-3. Add balance inquiry logic for the logged-in session.
+1. Implement `Transaction` model and `FileTransactionRepository` to log to `transactions.csv`.
+2. Implement `TransactionService.deposit()` and `TransactionService.withdraw()` with balance validation.
+3. Wire up Deposit and Withdraw options into the `MenuHandler` Dashboard.
 
 ---
 
 ## Open Questions
 _(Anything unresolved that needs a decision before proceeding.)_
-- Should the "session" be managed locally inside `MenuHandler` by keeping the authenticated `Account` instance in a variable, or should there be a dedicated global Session manager class? (Recommending localized `MenuHandler` scope to keep it simple).
+- None at the moment.
