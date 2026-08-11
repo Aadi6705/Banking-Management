@@ -27,6 +27,7 @@ class TransactionServiceTest {
         txLog = new ArrayList<>();
         mockAccountRepo = new AccountRepository() {
             @Override public void save(Account account) {}
+            @Override public void saveAll(List<Account> accounts) {}
             @Override public Account findByAccountNumber(String accountNumber) { return null; }
             @Override public List<Account> findAll() { return new ArrayList<>(); }
         };
@@ -70,5 +71,51 @@ class TransactionServiceTest {
         Account acc = new SavingsAccount("ACC-1", "Owner", 1000.0, "hash", LocalDateTime.now(), "ACTIVE");
         // SavingsAccount minimum is 1000, so any withdrawal should fail here
         assertThrows(InvalidTransactionException.class, () -> txService.withdraw(acc, 100.0));
+    }
+
+    @Test
+    void testTransfer_Success() {
+        Account source = new SavingsAccount("ACC-1", "Owner1", 1500.0, "hash", LocalDateTime.now(), "ACTIVE");
+        Account target = new CurrentAccount("ACC-2", "Owner2", 500.0, "hash", LocalDateTime.now(), "ACTIVE");
+        
+        // Update mock to return both accounts
+        mockAccountRepo = new AccountRepository() {
+            private final List<Account> accounts = Arrays.asList(source, target);
+            @Override public void save(Account account) {}
+            @Override public void saveAll(List<Account> accs) {}
+            @Override public Account findByAccountNumber(String accountNumber) { return null; }
+            @Override public List<Account> findAll() { return accounts; }
+        };
+        txService = new TransactionService(mockAccountRepo, mockTxRepo);
+
+        txService.transfer(source, "ACC-2", 200.0);
+
+        assertEquals(1300.0, source.getBalance());
+        assertEquals(700.0, target.getBalance());
+        assertEquals(2, txLog.size());
+        assertEquals("TRANSFER_OUT", txLog.get(0).getType());
+        assertEquals("TRANSFER_IN", txLog.get(1).getType());
+    }
+
+    @Test
+    void testTransfer_UnknownTarget() {
+        Account source = new SavingsAccount("ACC-1", "Owner1", 1500.0, "hash", LocalDateTime.now(), "ACTIVE");
+        
+        mockAccountRepo = new AccountRepository() {
+            private final List<Account> accounts = Arrays.asList(source);
+            @Override public void save(Account account) {}
+            @Override public void saveAll(List<Account> accs) {}
+            @Override public Account findByAccountNumber(String accountNumber) { return null; }
+            @Override public List<Account> findAll() { return accounts; }
+        };
+        txService = new TransactionService(mockAccountRepo, mockTxRepo);
+
+        assertThrows(InvalidTransactionException.class, () -> txService.transfer(source, "ACC-999", 200.0));
+    }
+
+    @Test
+    void testTransfer_Self() {
+        Account source = new SavingsAccount("ACC-1", "Owner1", 1500.0, "hash", LocalDateTime.now(), "ACTIVE");
+        assertThrows(InvalidTransactionException.class, () -> txService.transfer(source, "ACC-1", 200.0));
     }
 }

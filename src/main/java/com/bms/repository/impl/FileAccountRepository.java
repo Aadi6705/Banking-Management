@@ -43,6 +43,19 @@ public class FileAccountRepository implements AccountRepository {
     }
 
     @Override
+    public void saveAll(List<Account> accounts) {
+        List<String> lines = new ArrayList<>();
+        for (Account acc : accounts) {
+            lines.add(serializeAccount(acc));
+        }
+        try {
+            FileManager.writeAllLines(filePath, lines);
+        } catch (IOException e) {
+            throw new RuntimeException("System error: Could not bulk write to accounts data file.", e);
+        }
+    }
+
+    @Override
     public Account findByAccountNumber(String accountNumber) {
         return findAll().stream()
             .filter(a -> a.getAccountNumber().equals(accountNumber))
@@ -70,17 +83,6 @@ public class FileAccountRepository implements AccountRepository {
         return accounts;
     }
 
-    private void saveAll(List<Account> accounts) {
-        List<String> lines = new ArrayList<>();
-        for (Account account : accounts) {
-            lines.add(serializeAccount(account));
-        }
-        try {
-            FileManager.writeAllLines(filePath, lines);
-        } catch (IOException e) {
-            throw new RuntimeException("System error: Could not write to accounts data file.", e);
-        }
-    }
 
     private Account parseAccount(String line) {
         String[] parts = line.split(",");

@@ -25,6 +25,7 @@ class AdminServiceTest {
                 new CurrentAccount("ACC-2", "Bob", 2000.0, "hash", LocalDateTime.now(), "ACTIVE")
             );
             @Override public void save(Account account) {}
+            @Override public void saveAll(List<Account> accounts) {}
             @Override public Account findByAccountNumber(String accountNumber) { return null; }
             @Override public List<Account> findAll() { return accounts; }
         };

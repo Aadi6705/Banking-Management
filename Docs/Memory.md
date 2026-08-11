@@ -12,9 +12,9 @@
 
 ## Project Snapshot
 - **Project:** Banking Management System (Java, OOP, File Handling)
-- **Current Phase:** Phase 4 — Transaction History & Reporting
+- **Current Phase:** Phase 5 — Fund Transfer
 - **Last Updated:** 2026-08-11
-- **Repo:** Local Git Repository (Phase 3 committed)
+- **Repo:** Local Git Repository (Phase 4 committed)
 
 ---
 
@@ -24,7 +24,7 @@ _(List phases fully done, with commit reference if useful.)_
 - [x] Phase 1 — Core Models & Account Creation
 - [x] Phase 2 — Authentication & Balance Inquiry
 - [x] Phase 3 — Transactions (Deposit & Withdraw)
-- [ ] Phase 4 — Transaction History & Reporting
+- [x] Phase 4 — Transaction History & Reporting
 - [ ] Phase 5 — Fund Transfer
 - [ ] Phase 6 — Polish, Testing & Documentation
 
@@ -34,9 +34,9 @@ _(List phases fully done, with commit reference if useful.)_
 _(A quick factual list — what exists and works right now.)_
 - **Models & Utils:** Complete (`Account`, `Customer`, `Transaction`, `IdGenerator`, `PasswordUtil`, `FileManager`).
 - **Repository:** `FileAccountRepository` and `FileTransactionRepository` handle CSV data securely.
-- **Services:** `AccountService`, `AuthService`, and `TransactionService` implement business rules and data atomicity.
-- **UI:** `MenuHandler` manages the Main Menu and User Dashboard.
-- **Features working:** Account Creation, Login, Balance Inquiry, Deposits, and Withdrawals.
+- **Services:** `AccountService`, `AuthService`, `TransactionService`, and `AdminService`.
+- **UI:** `MenuHandler` manages the Main Menu, User Dashboard, and Admin Utilities. `ConsolePrinter` handles tabular formatting.
+- **Features working:** Account Creation, Login, Balance Inquiry, Deposits, Withdrawals, History Viewing, Admin Search, Admin Summary.
 
 ---
 
@@ -50,17 +50,19 @@ _(Anything that deviated from or clarified the original docs — so it's not re-
 - **Session Management:** Kept locally in `MenuHandler`'s `showUserDashboard` loop.
 - **Transaction IDs:** Using standard Java UUIDs.
 - **Persistence Atomicity:** `TransactionService` appends to the transaction log *before* updating the account file to prevent state divergence in case of crashes.
+- **Admin Access:** Added a hidden `99` option in the Main Menu to access Admin utilities without full auth flow.
+- **Reporting Format:** Used formatted console tables to display History and Account Search Results.
 
 ---
 
 ## Next Steps
 _(The immediate next 1–3 tasks — what a new session should pick up first.)_
-1. Implement `TransactionService.getHistory(accountNumber)`.
-2. Add "View Transaction History" to the User Dashboard and format output as a table.
-3. Add Admin Utility functionality (list all accounts, search by name/ID, bank-wide summary report) to a new Admin Menu.
+1. Implement `TransactionService.transfer(Account sourceAccount, String targetAccountNumber, double amount)`.
+2. Ensure atomicity during transfer (deduct from source, add to target, log 2 transaction records).
+3. Add "Fund Transfer" option to the User Dashboard in `MenuHandler`.
 
 ---
 
 ## Open Questions
 _(Anything unresolved that needs a decision before proceeding.)_
-- How should we access the "Admin Utility"? Should we add a hardcoded "Admin Login" to the Main Menu, or just a hidden option?
+- How should a transfer be recorded in the transaction log? As a normal DEPOSIT/WITHDRAW, or as a specific TRANSFER_OUT/TRANSFER_IN type?

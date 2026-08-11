@@ -116,7 +116,8 @@ public class MenuHandler {
             System.out.println(" 2. Deposit");
             System.out.println(" 3. Withdraw");
             System.out.println(" 4. Transaction History");
-            System.out.println(" 5. Logout");
+            System.out.println(" 5. Transfer Funds");
+            System.out.println(" 6. Logout");
             ConsolePrinter.printSeparator();
             System.out.print(" Select an option: ");
 
@@ -137,10 +138,13 @@ public class MenuHandler {
                     ConsolePrinter.printTransactionHistory(transactionService.getHistory(account.getAccountNumber()));
                     break;
                 case "5":
+                    handleTransfer(account);
+                    break;
+                case "6":
                     ConsolePrinter.printSuccess("Logged out successfully.");
                     return; // Returns to Main Menu
                 default:
-                    ConsolePrinter.printError("Invalid option. Please enter 1, 2, 3, 4, or 5.");
+                    ConsolePrinter.printError("Invalid option. Please enter 1-6.");
             }
         }
     }
@@ -166,6 +170,25 @@ public class MenuHandler {
             double amount = Double.parseDouble(scanner.nextLine().trim());
             transactionService.withdraw(account, amount);
             ConsolePrinter.printSuccess("Withdrawal of " + ConsolePrinter.formatCurrency(amount) + " completed. New balance: " + ConsolePrinter.formatCurrency(account.getBalance()));
+        } catch (NumberFormatException e) {
+            ConsolePrinter.printError("Invalid amount format.");
+        } catch (InvalidTransactionException e) {
+            ConsolePrinter.printError(e.getMessage());
+        } catch (Exception e) {
+            ConsolePrinter.printError("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private void handleTransfer(Account account) {
+        System.out.print(" Enter Target Account Number: ");
+        String targetAcc = scanner.nextLine().trim();
+        
+        System.out.print(" Enter amount to transfer: ₹");
+        try {
+            double amount = Double.parseDouble(scanner.nextLine().trim());
+            transactionService.transfer(account, targetAcc, amount);
+            ConsolePrinter.printSuccess("Transfer of " + ConsolePrinter.formatCurrency(amount) + " to " + targetAcc + " completed.");
+            ConsolePrinter.printInfo("New balance: " + ConsolePrinter.formatCurrency(account.getBalance()));
         } catch (NumberFormatException e) {
             ConsolePrinter.printError("Invalid amount format.");
         } catch (InvalidTransactionException e) {

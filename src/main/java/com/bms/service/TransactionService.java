@@ -74,4 +74,69 @@ public class TransactionService {
         }
         return transactionRepository.findByAccountNumber(accountNumber.trim());
     }
+
+    /**
+     * Transfers funds from one account to another atomically.
+     */
+    public void transfer(Account sourceAccount, String targetAccountNumber, double amount) {
+        if (amount <= 0) {
+            throw new InvalidTransactionException("Transfer amount must be greater than zero.");
+        }
+        if (sourceAccount.getAccountNumber().equalsIgnoreCase(targetAccountNumber.trim())) {
+            throw new InvalidTransactionException("Cannot transfer funds to the same account.");
+        }
+
+        // Fetch all accounts into memory to modify and save atomically
+        List<Account> allAccounts = accountRepository.findAll();
+        
+        Account targetAccount = allAccounts.stream()
+                .filter(a -> a.getAccountNumber().equalsIgnoreCase(targetAccountNumber.trim()))
+                .findFirst()
+                .orElseThrow(() -> new InvalidTransactionException("Target account not found."));
+
+        // Replace sourceAccount with the instance from our loaded list
+        Account sourceAccountFromList = allAccounts.stream()
+                .filter(a -> a.getAccountNumber().equals(sourceAccount.getAccountNumber()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Source account not found in repository."));
+
+        // Try withdrawing first
+        try {
+            sourceAccountFromList.withdraw(amount);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            throw new InvalidTransactionException(e.getMessage());
+        }
+
+        // Apply deposit
+        targetAccount.deposit(amount);
+
+        // Generate logs
+        Transaction txOut = new Transaction(
+                UUID.randomUUID().toString(),
+                sourceAccountFromList.getAccountNumber(),
+                "TRANSFER_OUT",
+                amount,
+                LocalDateTime.now(),
+                sourceAccountFromList.getBalance()
+        );
+
+        Transaction txIn = new Transaction(
+                UUID.randomUUID().toString(),
+                targetAccount.getAccountNumber(),
+                "TRANSFER_IN",
+                amount,
+                LocalDateTime.now(),
+                targetAccount.getBalance()
+        );
+
+        // Append logs first
+        transactionRepository.append(txOut);
+        transactionRepository.append(txIn);
+
+        // Atomically rewrite account state
+        accountRepository.saveAll(allAccounts);
+
+        // Update the reference passed in so the UI sees the new balance immediately
+        sourceAccount.withdraw(amount); 
+    }
 }
