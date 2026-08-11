@@ -4,6 +4,7 @@ import com.bms.exception.AccountValidationException;
 import com.bms.exception.InvalidTransactionException;
 import com.bms.model.Account;
 import com.bms.service.AccountService;
+import com.bms.service.AdminService;
 import com.bms.service.AuthService;
 import com.bms.service.TransactionService;
 
@@ -13,12 +14,14 @@ public class MenuHandler {
     private final AccountService accountService;
     private final AuthService authService;
     private final TransactionService transactionService;
+    private final AdminService adminService;
     private final Scanner scanner;
 
-    public MenuHandler(AccountService accountService, AuthService authService, TransactionService transactionService) {
+    public MenuHandler(AccountService accountService, AuthService authService, TransactionService transactionService, AdminService adminService) {
         this.accountService = accountService;
         this.authService = authService;
         this.transactionService = transactionService;
+        this.adminService = adminService;
         this.scanner = new Scanner(System.in);
     }
 
@@ -45,6 +48,9 @@ public class MenuHandler {
                 case "3":
                     ConsolePrinter.printInfo("Exiting System. Goodbye!");
                     return;
+                case "99":
+                    handleAdminMenu();
+                    break;
                 default:
                     ConsolePrinter.printError("Invalid option. Please enter 1, 2, or 3.");
             }
@@ -109,7 +115,8 @@ public class MenuHandler {
             System.out.println(" 1. Check Balance");
             System.out.println(" 2. Deposit");
             System.out.println(" 3. Withdraw");
-            System.out.println(" 4. Logout");
+            System.out.println(" 4. Transaction History");
+            System.out.println(" 5. Logout");
             ConsolePrinter.printSeparator();
             System.out.print(" Select an option: ");
 
@@ -126,10 +133,14 @@ public class MenuHandler {
                     handleWithdraw(account);
                     break;
                 case "4":
+                    ConsolePrinter.printHeader("TRANSACTION HISTORY");
+                    ConsolePrinter.printTransactionHistory(transactionService.getHistory(account.getAccountNumber()));
+                    break;
+                case "5":
                     ConsolePrinter.printSuccess("Logged out successfully.");
                     return; // Returns to Main Menu
                 default:
-                    ConsolePrinter.printError("Invalid option. Please enter 1, 2, 3, or 4.");
+                    ConsolePrinter.printError("Invalid option. Please enter 1, 2, 3, 4, or 5.");
             }
         }
     }
@@ -161,6 +172,42 @@ public class MenuHandler {
             ConsolePrinter.printError(e.getMessage());
         } catch (Exception e) {
             ConsolePrinter.printError("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private void handleAdminMenu() {
+        while (true) {
+            ConsolePrinter.printHeader("ADMIN UTILITIES");
+            System.out.println(" 1. List all accounts");
+            System.out.println(" 2. Search accounts");
+            System.out.println(" 3. Bank-wide summary report");
+            System.out.println(" 4. Return to Main Menu");
+            ConsolePrinter.printSeparator();
+            System.out.print(" Select an option: ");
+
+            String choice = scanner.nextLine().trim();
+
+            switch (choice) {
+                case "1":
+                    ConsolePrinter.printHeader("ALL ACCOUNTS");
+                    ConsolePrinter.printAccountList(adminService.getAllAccounts());
+                    break;
+                case "2":
+                    System.out.print(" Enter search query (Name or Account No): ");
+                    String query = scanner.nextLine().trim();
+                    ConsolePrinter.printHeader("SEARCH RESULTS");
+                    ConsolePrinter.printAccountList(adminService.searchAccounts(query));
+                    break;
+                case "3":
+                    ConsolePrinter.printHeader("BANK SUMMARY REPORT");
+                    System.out.println(adminService.getBankSummary());
+                    ConsolePrinter.printSeparator();
+                    break;
+                case "4":
+                    return;
+                default:
+                    ConsolePrinter.printError("Invalid option. Please enter 1, 2, 3, or 4.");
+            }
         }
     }
 }

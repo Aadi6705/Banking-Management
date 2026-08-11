@@ -7,6 +7,7 @@ import com.bms.repository.AccountRepository;
 import com.bms.repository.TransactionRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class TransactionService {
@@ -62,5 +63,15 @@ public class TransactionService {
         // Atomic ordering: append log first, then save state
         transactionRepository.append(tx);
         accountRepository.save(account);
+    }
+
+    /**
+     * Retrieves the transaction history for a specific account.
+     */
+    public List<Transaction> getHistory(String accountNumber) {
+        if (accountNumber == null || accountNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("Account number cannot be empty.");
+        }
+        return transactionRepository.findByAccountNumber(accountNumber.trim());
     }
 }

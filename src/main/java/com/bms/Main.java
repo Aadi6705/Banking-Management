@@ -5,6 +5,7 @@ import com.bms.repository.TransactionRepository;
 import com.bms.repository.impl.FileAccountRepository;
 import com.bms.repository.impl.FileTransactionRepository;
 import com.bms.service.AccountService;
+import com.bms.service.AdminService;
 import com.bms.service.AuthService;
 import com.bms.service.TransactionService;
 import com.bms.ui.MenuHandler;
@@ -20,8 +21,9 @@ public class Main {
         AccountService accountService = new AccountService(accountRepository);
         AuthService authService = new AuthService(accountRepository);
         TransactionService transactionService = new TransactionService(accountRepository, transactionRepository);
+        AdminService adminService = new AdminService(accountRepository);
         
-        MenuHandler menuHandler = new MenuHandler(accountService, authService, transactionService);
+        MenuHandler menuHandler = new MenuHandler(accountService, authService, transactionService, adminService);
 
         menuHandler.start();
     }

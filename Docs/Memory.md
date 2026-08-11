@@ -12,9 +12,9 @@
 
 ## Project Snapshot
 - **Project:** Banking Management System (Java, OOP, File Handling)
-- **Current Phase:** Phase 3 — Transactions (Deposit & Withdraw)
+- **Current Phase:** Phase 4 — Transaction History & Reporting
 - **Last Updated:** 2026-08-11
-- **Repo:** Local Git Repository (Phase 2 committed)
+- **Repo:** Local Git Repository (Phase 3 committed)
 
 ---
 
@@ -23,7 +23,7 @@ _(List phases fully done, with commit reference if useful.)_
 - [x] Phase 0 — Project Setup
 - [x] Phase 1 — Core Models & Account Creation
 - [x] Phase 2 — Authentication & Balance Inquiry
-- [ ] Phase 3 — Transactions (Deposit & Withdraw)
+- [x] Phase 3 — Transactions (Deposit & Withdraw)
 - [ ] Phase 4 — Transaction History & Reporting
 - [ ] Phase 5 — Fund Transfer
 - [ ] Phase 6 — Polish, Testing & Documentation
@@ -32,11 +32,11 @@ _(List phases fully done, with commit reference if useful.)_
 
 ## Current State of the Code
 _(A quick factual list — what exists and works right now.)_
-- **Models & Utils:** Complete (`Account`, `Customer`, `IdGenerator`, `PasswordUtil`, `FileManager`).
-- **Repository:** `FileAccountRepository` fully handles `accounts.csv`.
-- **Services:** `AccountService` and `AuthService` implemented and tested.
-- **UI:** `MenuHandler` handles Create Account and Login. On login, users enter the Dashboard menu.
-- **Features working:** Account creation (validation/hashing), Login (authentication), and Balance Inquiry.
+- **Models & Utils:** Complete (`Account`, `Customer`, `Transaction`, `IdGenerator`, `PasswordUtil`, `FileManager`).
+- **Repository:** `FileAccountRepository` and `FileTransactionRepository` handle CSV data securely.
+- **Services:** `AccountService`, `AuthService`, and `TransactionService` implement business rules and data atomicity.
+- **UI:** `MenuHandler` manages the Main Menu and User Dashboard.
+- **Features working:** Account Creation, Login, Balance Inquiry, Deposits, and Withdrawals.
 
 ---
 
@@ -46,19 +46,21 @@ _(Anything that deviated from or clarified the original docs — so it's not re-
 - **Minimum Balance (Savings):** Hardcoded to ₹1000.00 for v1.
 - **PIN Complexity:** Fixed to exactly 4 numeric digits.
 - **Corrupted Data:** Fail-fast on application load to protect data integrity.
-- **Lockout:** Left out for v1 (unlimited retries) to keep implementation simple as recommended.
-- **Session Management:** Kept locally in `MenuHandler`'s `showUserDashboard` loop rather than a global state.
+- **Lockout:** Left out for v1 (unlimited retries) to keep implementation simple.
+- **Session Management:** Kept locally in `MenuHandler`'s `showUserDashboard` loop.
+- **Transaction IDs:** Using standard Java UUIDs.
+- **Persistence Atomicity:** `TransactionService` appends to the transaction log *before* updating the account file to prevent state divergence in case of crashes.
 
 ---
 
 ## Next Steps
 _(The immediate next 1–3 tasks — what a new session should pick up first.)_
-1. Implement `Transaction` model and `FileTransactionRepository` to log to `transactions.csv`.
-2. Implement `TransactionService.deposit()` and `TransactionService.withdraw()` with balance validation.
-3. Wire up Deposit and Withdraw options into the `MenuHandler` Dashboard.
+1. Implement `TransactionService.getHistory(accountNumber)`.
+2. Add "View Transaction History" to the User Dashboard and format output as a table.
+3. Add Admin Utility functionality (list all accounts, search by name/ID, bank-wide summary report) to a new Admin Menu.
 
 ---
 
 ## Open Questions
 _(Anything unresolved that needs a decision before proceeding.)_
-- None at the moment.
+- How should we access the "Admin Utility"? Should we add a hardcoded "Admin Login" to the Main Menu, or just a hidden option?
