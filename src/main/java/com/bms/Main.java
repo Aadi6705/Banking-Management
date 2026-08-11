@@ -1,9 +1,17 @@
 package com.bms;
 
+import com.bms.repository.AccountRepository;
+import com.bms.repository.impl.FileAccountRepository;
+import com.bms.service.AccountService;
+import com.bms.ui.MenuHandler;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("==================================================");
-        System.out.println("        BANKING MANAGEMENT SYSTEM (BMS)");
-        System.out.println("==================================================");
+        String accountsFilePath = "data/accounts.csv";
+        AccountRepository accountRepository = new FileAccountRepository(accountsFilePath);
+        AccountService accountService = new AccountService(accountRepository);
+        MenuHandler menuHandler = new MenuHandler(accountService);
+
+        menuHandler.start();
     }
 }
